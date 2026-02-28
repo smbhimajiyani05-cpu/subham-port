@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ATM Simulation</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#050505;color:#00ffff;display:flex;justify-content:center;align-items:center;height:100vh;}
+.atm{background:#111;padding:30px;border-radius:20px;box-shadow:0 0 35px #00ffff;text-align:center;width:380px;position:relative;}
+.card{width:90px;height:55px;background:#00ffff;margin:auto;border-radius:8px;animation:insert 2s infinite alternate;}
+@keyframes insert{from{transform:translateY(0)}to{transform:translateY(12px)}}
+button{background:#00ffff;border:none;padding:10px 18px;margin:5px;border-radius:20px;cursor:pointer;}
+.keypad button{width:70px;margin:4px;}
+.menu{display:none;}
+.history{max-height:110px;overflow:auto;background:#000;padding:10px;border-radius:10px;margin-top:10px;font-size:13px;}
+.eye{cursor:pointer;margin-left:10px;font-size:18px;}
+.popup{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;padding:20px;border-radius:15px;box-shadow:0 0 20px #00ffff;width:260px;text-align:center;}
+.progress{height:8px;background:#00ffff;width:0;margin-top:10px;transition:1s;}
+.logo{font-size:18px;margin-bottom:10px;}
+</style>
+</head>
+
+<body>
+
+<div class="atm">
+<div class="card"></div>
+
+<h3>ATM Login</h3>
+<input type="password" id="pin" maxlength="4" placeholder="Enter 4 digit PIN"
+style="width:100%;padding:10px;text-align:center;font-size:18px;border-radius:10px;border:none;">
+
+<div class="keypad">
+<button onclick="press(1)">1</button>
+<button onclick="press(2)">2</button>
+<button onclick="press(3)">3</button><br>
+<button onclick="press(4)">4</button>
+<button onclick="press(5)">5</button>
+<button onclick="press(6)">6</button><br>
+<button onclick="press(7)">7</button>
+<button onclick="press(8)">8</button>
+<button onclick="press(9)">9</button><br>
+<button onclick="clearPin()">C</button>
+<button onclick="press(0)">0</button>
+<button onclick="login()">OK</button>
+</div>
+
+<div class="menu" id="menu">
+<h3>ATM Menu</h3>
+<p>Balance: <span id="balance">******</span><span class="eye" onclick="toggleBalance()">👁</span></p>
+
+<button onclick="withdraw()">Withdraw</button>
+<button onclick="deposit()">Deposit</button>
+<button onclick="transfer()">Transfer</button>
+<button onclick="showReceipt()">Receipt</button>
+<button onclick="logout()">Logout</button>
+
+<div class="history" id="history"></div>
+</div>
+
+<!-- OTP popup -->
+<div class="popup" id="otpPopup">
+<h3>Enter OTP</h3>
+<input id="otpInput"><br>
+<p id="timer">30s</p>
+<button onclick="verifyOtp()">Verify</button>
+<button onclick="resendOtp()">Resend</button>
+</div>
+
+<!-- processing popup -->
+<div class="popup" id="processingPopup">
+<h3>Processing...</h3>
+<div class="progress" id="progress"></div>
+</div>
+
+<!-- receipt -->
+<div class="popup" id="receipt">
+<div class="logo">🏦 SHUBHAM'S BANK</div>
+<div id="receiptData"></div>
+<button onclick="closeReceipt()">Close</button>
+</div>
+
+</div>
+
+<script>
+let bal=100000;
+let history=[];
+let show=false;
+let otp=0;
+let transferAmt=0;
+let transferAcc="";
+let timerRef=null;
+
+/* digits only */
+document.getElementById("pin").addEventListener("input",function(){
+this.value=this.value.replace(/[^0-9]/g,"").slice(0,4);
+});
+
+/* enter login */
+document.addEventListener("keydown",e=>{if(e.key==="Enter") login();});
+
+function press(num){let p=document.getElementById("pin");if(p.value.length<4)p.value+=num;}
+function clearPin(){document.getElementById("pin").value="";}
+
+/* login */
+function login(){
+let entered=document.getElementById("pin").value;
+if(!/^\d{4}$/.test(entered)){alert("PIN must be 4 digit");return;}
+document.getElementById("menu").style.display="block";
+}
+
+function toggleBalance(){show=!show;document.getElementById("balance").innerText=show?"₹"+bal:"******";}
+
+function withdraw(){let a=parseInt(prompt("Withdraw"));if(a>0&&bal>=a){bal-=a;history.push("Withdraw ₹"+a);update();}}
+function deposit(){let a=parseInt(prompt("Deposit"));if(a>0){bal+=a;history.push("Deposit ₹"+a);update();}}
+
+/* transfer */
+function transfer(){
+transferAcc=prompt("Enter 11 digit account number");
+if(!/^\d{11}$/.test(transferAcc)){alert("Invalid account number");return;}
+
+transferAmt=parseInt(prompt("Enter amount"));
+if(transferAmt>bal){alert("Low balance");return;}
+
+generateOtp();
+document.getElementById("otpPopup").style.display="block";
+}
+
+/* otp */
+function generateOtp(){
+otp=Math.floor(1000+Math.random()*9000);
+alert("OTP: "+otp);
+startTimer();
+}
+
+function startTimer(){
+let t=30;
+clearInterval(timerRef);
+timerRef=setInterval(()=>{
+t--;
+document.getElementById("timer").innerText=t+"s";
+if(t<=0) clearInterval(timerRef);
+},1000);
+}
+
+function resendOtp(){generateOtp();}
+
+/* ⭐ verify otp + processing */
+function verifyOtp(){
+if(document.getElementById("otpInput").value==otp){
+
+document.getElementById("otpPopup").style.display="none";
+document.getElementById("processingPopup").style.display="block";
+
+let p=0;
+let bar=setInterval(()=>{
+p+=20;
+document.getElementById("progress").style.width=p+"%";
+
+if(p>=100){
+clearInterval(bar);
+bal-=transferAmt;
+history.push("Transfer ₹"+transferAmt+" to "+transferAcc);
+update();
+document.getElementById("processingPopup").style.display="none";
+alert("Transfer success");
+}
+},600);
+
+}else alert("Wrong OTP");
+}
+
+function update(){
+if(show)document.getElementById("balance").innerText="₹"+bal;
+document.getElementById("history").innerHTML=history.join("<br>");
+}
+
+function showReceipt(){
+document.getElementById("receipt").style.display="block";
+document.getElementById("receiptData").innerHTML="<b>Balance: ₹"+bal+"</b><br><br>"+history.join("<br>");
+}
+
+function closeReceipt(){document.getElementById("receipt").style.display="none";}
+
+function logout(){
+
+/* ⭐ RESET ALL DATA */
+bal = 100000;
+history = [];
+show = false;
+otp = 0;
+transferAmt = 0;
+transferAcc = "";
+
+/* ⭐ UI RESET */
+document.getElementById("menu").style.display="none";
+document.getElementById("pin").value="";
+document.getElementById("balance").innerText="******";
+document.getElementById("history").innerHTML="";
+document.getElementById("otpPopup").style.display="none";
+document.getElementById("processingPopup").style.display="none";
+document.getElementById("receipt").style.display="none";
+document.getElementById("progress").style.width="0";
+document.getElementById("otpInput").value="";
+
+}
+
+</script>
+
+</body>
+</html>
