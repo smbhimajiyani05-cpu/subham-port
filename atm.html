@@ -31,7 +31,6 @@ padding:8px 16px;
 border-radius:20px;
 cursor:pointer;
 font-size:14px;
-backdrop-filter:blur(6px);
 transition:.2s;
 }
 
@@ -39,7 +38,30 @@ transition:.2s;
 background:rgba(0,255,255,0.3);
 }
 
-/* ATM Card */
+/* 🏦 Animated Bank Logo */
+.bankLogo{
+font-size:22px;
+font-weight:bold;
+margin-bottom:15px;
+letter-spacing:2px;
+animation:logoGlow 2s infinite alternate;
+}
+
+@keyframes logoGlow{
+from{
+opacity:.7;
+text-shadow:0 0 5px #00ffff;
+}
+to{
+opacity:1;
+text-shadow:
+0 0 10px #00ffff,
+0 0 20px #00ffff,
+0 0 35px #00ffff;
+}
+}
+
+/* ATM Box */
 .atm{
 background:#111;
 padding:30px;
@@ -119,11 +141,6 @@ margin-top:10px;
 transition:1s;
 }
 
-.logo{
-font-size:18px;
-margin-bottom:10px;
-}
-
 input{
 width:100%;
 padding:10px;
@@ -138,10 +155,12 @@ margin-bottom:10px;
 
 <body>
 
-<!-- 🔙 Back Button -->
 <button class="backBtn" onclick="location.href='index.html'">⬅ Back</button>
 
 <div class="atm">
+
+<!-- 🏦 Animated Logo -->
+<div class="bankLogo">🏦 SHUBHAM'S BANK</div>
 
 <div class="card"></div>
 
@@ -177,7 +196,6 @@ margin-bottom:10px;
 <div class="history" id="history"></div>
 </div>
 
-<!-- OTP popup -->
 <div class="popup" id="otpPopup">
 <h3>Enter OTP</h3>
 <input id="otpInput">
@@ -186,15 +204,13 @@ margin-bottom:10px;
 <button onclick="resendOtp()">Resend</button>
 </div>
 
-<!-- processing popup -->
 <div class="popup" id="processingPopup">
 <h3>Processing...</h3>
 <div class="progress" id="progress"></div>
 </div>
 
-<!-- receipt -->
 <div class="popup" id="receipt">
-<div class="logo">🏦 SHUBHAM'S BANK</div>
+<div class="bankLogo">🏦 SHUBHAM'S BANK</div>
 <div id="receiptData"></div>
 <button onclick="closeReceipt()">Close</button>
 </div>
@@ -338,7 +354,6 @@ document.getElementById("receipt").style.display="none";
 }
 
 function logout(){
-
 bal=100000;
 history=[];
 show=false;
