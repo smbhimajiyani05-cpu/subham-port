@@ -23,7 +23,6 @@ z-index:-1;
 
 .neon{
 color:#00ffff;
-text-shadow:none;
 }
 
 header{
@@ -57,7 +56,7 @@ justify-content:center;
 flex-wrap:wrap;
 }
 
-/* ===== PREMIUM SKILL RING ===== */
+/* SKILL RING */
 
 .circle{
 width:130px;
@@ -69,7 +68,6 @@ justify-content:center;
 margin:auto;
 position:relative;
 background:conic-gradient(#00ffff 0deg,#222 0deg);
-transition:0.3s;
 }
 
 .circle::after{
@@ -88,20 +86,40 @@ font-size:22px;
 font-weight:bold;
 }
 
-/* ===== PROJECT CARD ===== */
+/* ===== PROJECT GRID ===== */
+
+.projects-grid{
+display:grid;
+grid-template-columns: repeat(2, 1fr);
+gap:20px;
+}
 
 .project{
-padding:15px;
-border:1px solid transparent;
+padding:25px;
 border-radius:15px;
-margin:10px;
+text-align:center;
 background:
 linear-gradient(#050505,#050505) padding-box,
 linear-gradient(45deg,#00ffff,#0099ff) border-box;
-text-align:center;
+border:1px solid transparent;
+transition:0.3s;
+color:#c084fc;
 }
 
-/* ===== LOADER ===== */
+.project:hover{
+transform:scale(1.05);
+box-shadow:0 0 15px #00ffff;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+.projects-grid{
+grid-template-columns:1fr;
+}
+}
+
+/* LOADER */
 
 #loader{
 position:fixed;
@@ -118,7 +136,7 @@ font-size:30px;
 z-index:9999;
 }
 
-/* ===== ABOUT ANIMATION ===== */
+/* ABOUT */
 
 .about{
 opacity:0;
@@ -131,7 +149,7 @@ opacity:1;
 transform:translateY(0);
 }
 
-/* ===== CONTACT ===== */
+/* CONTACT */
 
 .contact-icons{
 display:flex;
@@ -201,7 +219,7 @@ color:#aaa;
 <div class="card about">
 <h2 class="neon">About Me</h2>
 <p>
-I am a Chemical Engineering Student currently pursuing Sem-6 with basic knowledge of core chemical engineering subjects and Python Programming. I have strong analytical and problem-solving skills along with a willingness to learn new technologies. I am looking for an opportunity to gain practical experience and contribute effectively in a professional environment.
+I am a Chemical Engineering Student currently pursuing Sem-6 with basic knowledge of core chemical engineering subjects and Python Programming. I have strong analytical and problem-solving skills along with a willingness to learn new technologies.
 </p>
 </div>
 
@@ -209,18 +227,25 @@ I am a Chemical Engineering Student currently pursuing Sem-6 with basic knowledg
 <div class="card">
 <h2 class="neon">Projects</h2>
 
-<a href="atm.html" style="text-decoration:none;">
+<div class="projects-grid">
+
+<a href="atm.html">
 <div class="project">ATM System</div>
 </a>
 
-<a href="calculator.html" style="text-decoration:none;">
+<a href="calculator.html">
 <div class="project">Calculator</div>
 </a>
 
-<a href="./resume.pdf" target="_blank" style="text-decoration:none;">
+<a href="./resume.pdf" target="_blank">
 <div class="project">Resume</div>
 </a>
 
+<a href="#">
+<div class="project">Alien Invasion Game</div>
+</a>
+
+</div>
 </div>
 
 <!-- CONTACT -->
@@ -234,11 +259,11 @@ I am a Chemical Engineering Student currently pursuing Sem-6 with basic knowledg
 </div>
 </div>
 
-<footer>© 2026 Shubham Bhimajiyani</footer>
+<footer>© 2026 Shubham M. Bhimajiyani</footer>
 
 <script>
 
-/* ===== TYPING EFFECT ===== */
+/* TYPING */
 let text="Shubham M. Bhimajiyani";
 let i=0;
 let typingEl=document.getElementById("typing");
@@ -251,8 +276,7 @@ setTimeout(typing,100);
 }
 })();
 
-/* ===== LOADER THEN SKILL ANIMATION ===== */
-
+/* LOADER */
 window.addEventListener("load",()=>{
 setTimeout(()=>{
 document.getElementById("loader").style.display="none";
@@ -283,7 +307,6 @@ let fill=current*3.6;
 circle.style.background=`conic-gradient(#00ffff ${fill}deg,#222 ${fill}deg)`;
 span.innerHTML=current+"%";
 
-/* Glow pulse */
 circle.style.boxShadow=`0 0 ${15+current/4}px #00ffff`;
 
 if(progress<1){
@@ -297,14 +320,14 @@ requestAnimationFrame(animate);
 });
 }
 
-/* ===== ABOUT SCROLL ANIMATION ===== */
+/* ABOUT SCROLL */
 window.addEventListener("scroll",()=>{
 let about=document.querySelector(".about");
 if(about.getBoundingClientRect().top<window.innerHeight-100)
 about.classList.add("show");
 });
 
-/* ===== STARS BACKGROUND ===== */
+/* STARS */
 const canvas=document.getElementById("bg");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
@@ -329,6 +352,7 @@ if(s.y>canvas.height)s.y=0;
 });
 requestAnimationFrame(draw);
 })();
+
 </script>
 
 </body>
